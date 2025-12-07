@@ -1,5 +1,5 @@
 <p style="text-align: center">
-<img src="//github.com/googlefonts/noto-emoji/raw/refs/heads/main/png/512/emoji_u1f37b.png" width="128" />
+<img src="https://cdn.jsdelivr.net/gh/googlefonts/noto-emoji/png/512/emoji_u1f37b.png" width="128" />
 <h1 style="text-align: center">[WIP] Stremio Addon Cheers</h1>
 </p>
 
