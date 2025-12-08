@@ -9,7 +9,7 @@ export const getBaseUrl = async () => {
 };
 
 export const proxyAssetFactory = async () => {
-  const assetProxy = await getConfig<boolean>("assetProxy");
+  const assetProxy = await getConfig("assetProxy");
   const baseUrl = await getBaseUrl();
 
   return (url?: string | null) => {

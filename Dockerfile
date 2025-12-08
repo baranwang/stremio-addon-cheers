@@ -10,15 +10,11 @@ FROM base AS builder
 
 WORKDIR /app
 
-
 COPY package.json pnpm-lock.yaml ./
 
 RUN pnpm install --frozen-lockfile
 
 COPY . .
-
-ENV DATABASE_URL=file:./db.sqlite
-RUN pnpm prisma generate
 
 RUN pnpm build
 
@@ -34,7 +30,7 @@ COPY --from=builder /app/package.json ./package.json
 
 EXPOSE 3000
 
-ENV DATABASE_URL=file:./db.sqlite
+ENV DATABASE_PATH=./data
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 CMD ["pnpm", "start"]

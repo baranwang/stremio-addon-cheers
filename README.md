@@ -33,7 +33,7 @@
 docker run -d \
   --name stremio-addon-cheers \
   -p 3000:3000 \
-  -v cheers-data:/app/db.sqlite \
+  -v cheers-data:/app/data \
   ghcr.io/baranwang/stremio-addon-cheers:latest
 ```
 
@@ -47,7 +47,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - cheers-data:/app/db.sqlite
+      - cheers-data:/app/data
     restart: unless-stopped
 
 volumes:
@@ -65,9 +65,6 @@ cd stremio-addon-cheers
 
 # 安装依赖
 pnpm install
-
-# 初始化数据库
-pnpm prisma migrate dev
 
 # 启动开发服务器
 pnpm dev
@@ -97,7 +94,7 @@ pnpm start
 ## 🛠️ 技术栈
 
 - [Next.js](https://nextjs.org/) - React 全栈框架
-- [Prisma](https://www.prisma.io/) - 数据库 ORM
+- [LMDB](https://github.com/kriszyp/lmdb-js) - 高性能键值数据库
 - [Tailwind CSS](https://tailwindcss.com/) - 样式框架
 - [Stremio Addon SDK](https://github.com/Stremio/stremio-addon-sdk) - Stremio 插件协议
 

@@ -8,7 +8,7 @@ import {
 } from "@/components/item";
 import { Spinner } from "@/components/spinner";
 import type { UserInfo } from "@/lib/bilibili";
-import { getConfigs } from "@/lib/config";
+import { getConfig } from "@/lib/config";
 import { AssetProxySwitch } from "./asset-proxy-switch";
 import { FnvalSetting } from "./fnval-setting";
 import { ManifestUrl } from "./manifest-url";
@@ -17,7 +17,10 @@ interface ConfigureProps {
   userInfo: UserInfo;
 }
 export const Configure: React.FC<ConfigureProps> = async ({ userInfo }) => {
-  const configs = await getConfigs();
+  const [assetProxy, fnval] = await Promise.all([
+    getConfig("assetProxy"),
+    getConfig("fnval"),
+  ]);
 
   return (
     <div className="space-y-4">
@@ -33,10 +36,10 @@ export const Configure: React.FC<ConfigureProps> = async ({ userInfo }) => {
       </ItemGroup>
 
       <Suspense fallback={<Spinner />}>
-        <AssetProxySwitch value={configs.assetProxy} />
+        <AssetProxySwitch value={assetProxy} />
       </Suspense>
       <Suspense fallback={<Spinner />}>
-        <FnvalSetting value={configs.fnval} />
+        <FnvalSetting value={fnval} />
       </Suspense>
     </div>
   );
