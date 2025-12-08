@@ -10,7 +10,7 @@ import {
   FieldLabel,
 } from "@/components/field";
 import { FnvalType } from "@/lib/bilibili/stream/constants";
-import { saveFnvalSetting } from "./function";
+import { saveFnvalSetting } from "./service";
 
 interface FnvalSettingProps {
   value: number;

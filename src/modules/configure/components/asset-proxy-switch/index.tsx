@@ -8,7 +8,7 @@ import {
   FieldLabel,
 } from "@/components/field";
 import { Switch } from "@/components/switch";
-import { saveAssetProxySwitch } from "./functions";
+import { saveAssetProxySwitch } from "./service";
 
 interface AssetProxySwitchProps {
   value: boolean;
