@@ -2,7 +2,9 @@ import { Suspense } from "react";
 import { Spinner } from "@/components/spinner";
 import { ConfigureTemplate } from "@/modules/configure/templates";
 
-export default function Home() {
+export const dynamic = "force-dynamic";
+
+export default function ConfigurePage() {
   return (
     <Suspense
       fallback={

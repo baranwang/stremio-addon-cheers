@@ -7,6 +7,7 @@ const baseCatalogs: ManifestCatalog[] = [
   { id: SeasonType.Anime.toString(), type: "series", name: "番剧" },
   { id: SeasonType.Movie.toString(), type: "movie", name: "电影" },
   { id: SeasonType.Documentary.toString(), type: "series", name: "纪录片" },
+  { id: SeasonType.ChineseAnime.toString(), type: "series", name: "国创" },
   { id: SeasonType.TV.toString(), type: "series", name: "电视剧" },
   { id: SeasonType.VarietyShow.toString(), type: "series", name: "综艺" },
 ];

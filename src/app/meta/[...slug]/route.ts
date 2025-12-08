@@ -56,7 +56,7 @@ export async function GET(request: NextRequest) {
   const videos = episodes.map<MetaVideo>((ep) => {
     return {
       id: resourceId.stringify({
-        epId: ep.ep_id?.toString() ?? "",
+        epId: ep.ep_id.toString(),
         cid: ep.cid.toString(),
       }),
       title: ep.show_title ?? ep.long_title ?? ep.title,

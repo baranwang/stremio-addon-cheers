@@ -135,7 +135,7 @@ export const seasonEpisodeResponseSchema = createSuccessResponseSchema(
         .object({
           aid: z.number(),
           cid: z.number(),
-          ep_id: z.number().nullish().catch(undefined),
+          ep_id: z.number(),
           pub_time: z
             .number()
             .nullish()

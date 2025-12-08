@@ -3,17 +3,21 @@ import { createSuccessResponseSchema } from "../common";
 
 export const getStreamRequestSchema = z.object({
   type: z.string().default("mp4"),
+  platform: z.string().default("html5"),
   ep_id: z.coerce.number(),
   cid: z.coerce.number(),
-  qn: z.number().default(64 | 74 | 80 | 112 | 116 | 120),
-  fnval: z.number().default(0),
+  qn: z.number().default(16),
+  fnval: z.number().default(16),
   fnver: z.literal(0).default(0),
+  fourk: z.literal(1).default(1),
 });
 
 const streamUrlSchema = z.object({
   url: z.string(),
   backup_url: z.array(z.string()),
 });
+
+export type StreamUrl = z.infer<typeof streamUrlSchema>;
 
 export const getStreamResponseSchema = createSuccessResponseSchema(
   z.object({

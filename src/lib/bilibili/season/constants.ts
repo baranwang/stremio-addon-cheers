@@ -7,7 +7,7 @@ export enum SeasonType {
   Movie = 2,
   /** 纪录片 */
   Documentary = 3,
-  /** 国产动画 */
+  /** 国创 */
   ChineseAnime = 4,
   /** 电视剧 */
   TV = 5,

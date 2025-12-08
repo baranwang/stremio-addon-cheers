@@ -1,6 +1,12 @@
 import type { z } from "zod";
 import { request } from "@/lib/request";
-import { getStreamRequestSchema, getStreamResponseSchema } from "./schema";
+import {
+  getStreamRequestSchema,
+  getStreamResponseSchema,
+  type StreamUrl,
+} from "./schema";
+
+export type { StreamUrl };
 
 export const getStream = async (
   params: z.input<typeof getStreamRequestSchema>,
