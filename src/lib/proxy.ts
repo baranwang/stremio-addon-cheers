@@ -1,22 +1,21 @@
 import { headers } from "next/headers";
-import { prisma } from "@/prisma";
+import { getConfig } from "./config";
 
-export const proxyAssetFactory = async () => {
-  const config = await prisma.config.findUnique({
-    where: {
-      key: "assetProxy",
-    },
-  });
-  const assetProxy = config?.value as boolean;
+export const getBaseUrl = async () => {
   const headersList = await headers();
   const host = headersList.get("host");
   const protocol = headersList.get("x-forwarded-proto");
-  const fullUrl = `${protocol}://${host}`;
+  return `${protocol}://${host}`;
+};
+
+export const proxyAssetFactory = async () => {
+  const assetProxy = await getConfig<boolean>("assetProxy");
+  const baseUrl = await getBaseUrl();
 
   return (url?: string | null) => {
     if (!url) return undefined;
     if (assetProxy) {
-      return `${fullUrl}/proxy/${encodeURIComponent(url)}`;
+      return `${baseUrl}/proxy/${encodeURIComponent(url)}`;
     }
     return url;
   };

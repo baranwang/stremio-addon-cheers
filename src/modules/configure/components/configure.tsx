@@ -8,7 +8,7 @@ import {
 } from "@/components/item";
 import { Spinner } from "@/components/spinner";
 import type { UserInfo } from "@/lib/bilibili";
-import { prisma } from "@/prisma";
+import { getConfigs } from "@/lib/config";
 import { AssetProxySwitch } from "./asset-proxy-switch";
 import { ManifestUrl } from "./manifest-url";
 
@@ -16,15 +16,7 @@ interface ConfigureProps {
   userInfo: UserInfo;
 }
 export const Configure: React.FC<ConfigureProps> = async ({ userInfo }) => {
-  const configs = await prisma.config.findMany().then((res) =>
-    res.reduce(
-      (acc, curr) => {
-        acc[curr.key] = curr.value;
-        return acc;
-      },
-      {} as Record<string, any>,
-    ),
-  );
+  const configs = await getConfigs();
 
   return (
     <div className="space-y-4">

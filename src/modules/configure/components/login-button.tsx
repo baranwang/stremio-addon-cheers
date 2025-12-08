@@ -67,7 +67,9 @@ export const LoginButton: React.FC = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button size="lg">使用哔哩哔哩扫码登录</Button>
+        <Button size="lg" className="mx-auto block">
+          使用哔哩哔哩扫码登录
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

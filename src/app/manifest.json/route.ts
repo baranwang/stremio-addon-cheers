@@ -47,10 +47,6 @@ export async function GET() {
       types: ["movie", "series"],
       catalogs,
       idPrefixes: ["bilibili"],
-      behaviorHints: {
-        configurable: true,
-        configurationRequired: true,
-      },
     } satisfies Manifest,
     {
       headers: {

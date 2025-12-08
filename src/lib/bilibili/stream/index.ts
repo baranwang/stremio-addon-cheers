@@ -13,7 +13,7 @@ export const getStream = async (
 ) => {
   const searchParams = getStreamRequestSchema.parse(params);
   const response = await request
-    .get("pgc/player/web/playurl/html5", {
+    .get("pgc/player/web/playurl", {
       searchParams,
     })
     .json();
