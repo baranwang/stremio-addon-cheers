@@ -2,7 +2,11 @@ import type { ContentType, MetaDetail, MetaVideo } from "@stremio-addon/sdk";
 import { notFound } from "next/navigation";
 import type { NextRequest } from "next/server";
 import pLimit from "p-limit";
-import { getSeasonDetail, getSeasonEpisode } from "@/lib/bilibili";
+import {
+  getSeasonDetail,
+  getSeasonEpisode,
+  getSeasonIdsByDetail,
+} from "@/lib/bilibili";
 import { proxyAssetFactory } from "@/lib/proxy";
 import { matchResourceRoute } from "@/lib/router";
 import { resourceId } from "@/lib/utils";
@@ -21,15 +25,12 @@ const fetchSeasonEpisodes = async (seasonId: number, seasonNumber: number) => {
 export async function GET(request: NextRequest) {
   const [matched, params] = matchResourceRoute(request.nextUrl);
   if (!matched) {
-    return notFound();
+    notFound();
   }
-  const mediaId = params.id;
-  if (!mediaId || !mediaId.startsWith("bilibili:")) {
-    return notFound();
-  }
-  const mediaIdData = resourceId.parse<{ seasonId: string }>(mediaId);
-  if (!mediaIdData.seasonId) {
-    return notFound();
+
+  const mediaIdData = resourceId.parse<{ seasonId: string }>(params.id);
+  if (!mediaIdData?.seasonId) {
+    notFound();
   }
 
   const proxyAsset = await proxyAssetFactory();
@@ -39,13 +40,7 @@ export async function GET(request: NextRequest) {
   const detail = await getSeasonDetail(
     Number.parseInt(mediaIdData.seasonId, 10),
   );
-
-  let seasonIds: number[] = [];
-  if (detail.seasons.length > 1) {
-    seasonIds = detail.seasons.map((item) => item.season_id);
-  } else {
-    seasonIds = [detail.season_id];
-  }
+  const seasonIds = await getSeasonIdsByDetail(detail);
 
   const episodes = await Promise.all(
     seasonIds.map((seasonId, index) =>
@@ -69,7 +64,7 @@ export async function GET(request: NextRequest) {
   });
 
   const meta: MetaDetail = {
-    id: mediaId,
+    id: params.id,
     type: params.type as ContentType,
     name: detail.series?.series_title ?? detail.title,
     poster: proxyAsset(detail.cover),

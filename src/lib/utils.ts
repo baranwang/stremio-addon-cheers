@@ -16,7 +16,10 @@ class ResourceId {
   constructor(prefix: string) {
     this.#prefix = prefix;
   }
-  parse<T>(mediaId: string): T {
+  parse<T>(mediaId: string): T | null {
+    if (!mediaId.startsWith(this.#prefix)) {
+      return null;
+    }
     const [, data] = mediaId.split(this.#prefix);
     const searchParams = new URLSearchParams(data);
     return Object.fromEntries(searchParams.entries()) as T;

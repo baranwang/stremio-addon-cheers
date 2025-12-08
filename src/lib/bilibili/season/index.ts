@@ -56,6 +56,15 @@ export const getSeasonDetail = async (season_id: number) => {
   return seasonDetailResponseSchema.parse(response);
 };
 
+export const getSeasonIdsByDetail = async (
+  detail: z.output<typeof seasonDetailResponseSchema>,
+) => {
+  if (detail.seasons.length > 1) {
+    return detail.seasons.map((season) => season.season_id);
+  }
+  return [detail.season_id];
+};
+
 export const getSeasonEpisode = async (season_id: number) => {
   const response = await request
     .get("pgc/view/web/ep/list", {
