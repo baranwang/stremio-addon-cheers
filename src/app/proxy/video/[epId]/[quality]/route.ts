@@ -1,4 +1,5 @@
 import { XMLBuilder } from "fast-xml-parser";
+import { notFound } from "next/navigation";
 import { getStream } from "@/lib/bilibili";
 import { proxyAssetFactory } from "@/lib/proxy";
 
@@ -90,4 +91,6 @@ export async function GET(
       },
     });
   }
+
+  notFound();
 }
