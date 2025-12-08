@@ -10,6 +10,7 @@ import { Spinner } from "@/components/spinner";
 import type { UserInfo } from "@/lib/bilibili";
 import { getConfigs } from "@/lib/config";
 import { AssetProxySwitch } from "./asset-proxy-switch";
+import { FnvalSetting } from "./fnval-setting";
 import { ManifestUrl } from "./manifest-url";
 
 interface ConfigureProps {
@@ -33,6 +34,9 @@ export const Configure: React.FC<ConfigureProps> = async ({ userInfo }) => {
 
       <Suspense fallback={<Spinner />}>
         <AssetProxySwitch value={configs.assetProxy} />
+      </Suspense>
+      <Suspense fallback={<Spinner />}>
+        <FnvalSetting value={configs.fnval} />
       </Suspense>
     </div>
   );

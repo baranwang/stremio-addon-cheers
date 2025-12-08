@@ -1,6 +1,5 @@
 "use server";
 
-import type { InputJsonValue } from "@prisma/client/runtime/client";
 import { prisma } from "@/prisma";
 
 export const getConfigs = async () => {
@@ -14,21 +13,27 @@ export const getConfigs = async () => {
   );
 };
 
-export const getConfig = async <T>(key: string) => {
+interface Config {
+  cookies: Record<string, string>;
+  assetProxy: boolean;
+  fnval: number;
+}
+
+export const getConfig = async <K extends keyof Config>(key: K) => {
   const config = await prisma.config.findUnique({
     where: { key },
   });
-  return config?.value as T;
+  return config?.value as Config[K];
 };
 
-export const saveConfig = async <T extends InputJsonValue>(
-  key: string,
-  value: T,
+export const saveConfig = async <K extends keyof Config>(
+  key: K,
+  value: Config[K],
 ) => {
   const config = await prisma.config.upsert({
     create: { key, value },
     where: { key },
-    update: { value },
+    update: { value: value },
   });
-  return config.value as T;
+  return config.value as Config[K];
 };

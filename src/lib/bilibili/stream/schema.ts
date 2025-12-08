@@ -1,13 +1,14 @@
 import { z } from "zod";
 import { createSuccessResponseSchema } from "../common";
+import { FnvalType } from "./constants";
 
 export const getStreamRequestSchema = z.object({
   type: z.union([z.literal("mp4"), z.literal("dash")]).optional(),
   platform: z.string().optional(),
   ep_id: z.coerce.number(),
   cid: z.coerce.number().optional(),
-  qn: z.coerce.number().default(16),
-  fnval: z.coerce.number().default(16),
+  qn: z.coerce.number().default(64),
+  fnval: z.coerce.number().default(FnvalType.DASH),
   fnver: z.literal(0).default(0),
   fourk: z.literal(1).default(1),
 });
@@ -56,15 +57,21 @@ const dashStreamItemSchema = z.object({
   frame_rate: z.string(),
 });
 
+export type DashStreamItem = z.infer<typeof dashStreamItemSchema>;
+
+const dashInfoSchema = z.object({
+  duration: z.number(),
+  min_buffer_time: z.number(),
+  video: z.array(dashStreamItemSchema),
+  audio: z.array(dashStreamItemSchema),
+});
+
+export type DashInfo = z.infer<typeof dashInfoSchema>;
+
 const streamDashResponseSchema = z.object({
   type: z.literal("DASH"),
   support_formats: supportFormatsSchema,
-  dash: z.object({
-    duration: z.number(),
-    min_buffer_time: z.number(),
-    video: z.array(dashStreamItemSchema),
-    audio: z.array(dashStreamItemSchema),
-  }),
+  dash: dashInfoSchema,
 });
 
 export const getStreamResponseSchema = createSuccessResponseSchema(

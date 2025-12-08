@@ -2,7 +2,6 @@ import type { Stream } from "@stremio-addon/sdk";
 import { notFound } from "next/navigation";
 import type { NextRequest } from "next/server";
 import {
-  getCookies,
   getSeasonDetail,
   getSeasonEpisode,
   getSeasonIdsByDetail,
@@ -51,11 +50,6 @@ export async function GET(request: NextRequest) {
     notFound();
   }
 
-  const cookies = await getCookies();
-  if (!cookies) {
-    notFound();
-  }
-
   const response = await getStream({
     ep_id: epId,
     cid: cid,
@@ -63,16 +57,18 @@ export async function GET(request: NextRequest) {
 
   const baseUrl = await getBaseUrl();
 
-  const streams: Stream[] = response.support_formats.map((format) => {
+  const streams = response.support_formats.map<Stream>((format) => {
     let name = "";
     if (format.need_vip) {
       name = "[VIP] ";
     }
     name += format.new_description || format.description;
-    return {
+    const result: Stream = {
       name,
       url: `${baseUrl}/proxy/video/${epId}/${format.quality}`,
     };
+
+    return result;
   });
 
   return Response.json({ streams });

@@ -27,7 +27,7 @@ export const AssetProxySwitch: React.FC<AssetProxySwitchProps> = ({
       <FieldContent>
         <FieldLabel>开启资源代理</FieldLabel>
         <FieldDescription>
-          开启资源代理后，所有资源都会通过代理服务器获取，避免资源无法加载的问题
+          开启后所有资源都会通过代理服务器获取，避免资源无法加载的问题
         </FieldDescription>
       </FieldContent>
 

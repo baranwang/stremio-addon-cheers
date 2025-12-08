@@ -1,7 +1,7 @@
 "use server";
 
 import type { z } from "zod";
-import { saveCookies } from "@/lib/bilibili/cookies";
+import { saveConfig } from "@/lib/config";
 import { request } from "@/lib/request";
 import {
   checkQrCodeStatusResponseSchema,
@@ -37,7 +37,7 @@ export const checkQrCodeStatus = async (qrcode_key: string) => {
       const [name, value] = nameValue.split("=");
       cookies[name] = value;
     }
-    await saveCookies(cookies);
+    await saveConfig("cookies", cookies);
   }
   return data;
 };
