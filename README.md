@@ -56,11 +56,11 @@ volumes:
 
 ### 本地开发
 
-确保已安装 [Node.js](https://nodejs.org/) (>= 20) 和 [pnpm](https://pnpm.io/)。
+确保已安装 [Node.js](https://nodejs.org/) (>= 24) 和 [pnpm](https://pnpm.io/)。
 
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/stremio-addon-cheers.git
+git clone https://github.com/baranwang/stremio-addon-cheers.git
 cd stremio-addon-cheers
 
 # 安装依赖
