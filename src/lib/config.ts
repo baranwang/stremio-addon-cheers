@@ -5,7 +5,6 @@ import { db } from "./db";
 interface Config {
   cookies: Record<string, string>;
   assetProxy: boolean;
-  fnval: number;
 }
 
 export const getConfig = async <K extends keyof Config>(key: K) => {

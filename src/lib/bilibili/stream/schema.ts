@@ -2,13 +2,22 @@ import { z } from "zod";
 import { createSuccessResponseSchema } from "../common";
 import { FnvalType } from "./constants";
 
+const DEFAULT_FNVAL =
+  FnvalType.DASH |
+  FnvalType.HDR |
+  FnvalType.NEED_4K |
+  FnvalType.NEED_8K |
+  FnvalType.DOLBY_AUDIO |
+  FnvalType.DOLBY_VISION |
+  FnvalType.NEED_HDR_VIVID;
+
 export const getStreamRequestSchema = z.object({
   type: z.union([z.literal("mp4"), z.literal("dash")]).optional(),
   platform: z.string().optional(),
   ep_id: z.coerce.number(),
   cid: z.coerce.number().optional(),
   qn: z.coerce.number().default(64),
-  fnval: z.coerce.number().default(FnvalType.DASH),
+  fnval: z.coerce.number().default(DEFAULT_FNVAL),
   fnver: z.literal(0).default(0),
   fourk: z.literal(1).default(1),
 });

@@ -51,9 +51,7 @@ export async function GET(request: NextRequest) {
     notFound();
   }
 
-  const fnval = await getConfig("fnval");
-
-  const response = await getStream({ ep_id: epId, cid, fnval });
+  const response = await getStream({ ep_id: epId, cid });
 
   const baseUrl = await getBaseUrl();
 

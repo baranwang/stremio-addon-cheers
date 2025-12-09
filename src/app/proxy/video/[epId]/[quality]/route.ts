@@ -2,7 +2,6 @@ import { XMLBuilder } from "fast-xml-parser";
 import { notFound } from "next/navigation";
 import type { DashStreamItem } from "@/lib/bilibili";
 import { getStream } from "@/lib/bilibili";
-import { getConfig } from "@/lib/config";
 import { proxyAssetFactory } from "@/lib/proxy";
 
 type ProxyAssetFn = Awaited<ReturnType<typeof proxyAssetFactory>>;
@@ -46,12 +45,10 @@ export async function GET(
   ctx: RouteContext<"/proxy/video/[epId]/[quality]">,
 ) {
   const { epId, quality } = await ctx.params;
-  const fnval = await getConfig("fnval");
 
   const response = await getStream({
     ep_id: epId,
     qn: quality,
-    fnval,
   });
 
   const proxyAsset = await proxyAssetFactory();
@@ -80,9 +77,9 @@ export async function GET(
         Period: {
           "@_duration": `PT${dash.duration}S`,
           AdaptationSet: [
-            ...dash.video.map((v) =>
-              createAdaptationSet(v, "video", proxyAsset),
-            ),
+            ...dash.video
+              .filter((item) => item.id.toString() === quality.toString())
+              .map((v) => createAdaptationSet(v, "video", proxyAsset)),
             ...dash.audio.map((a) =>
               createAdaptationSet(a, "audio", proxyAsset),
             ),

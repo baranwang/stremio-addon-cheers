@@ -25,4 +25,21 @@ export enum FnvalType {
   NEED_8K = 1024,
   AV1 = 2048,
   SMART_REPAIR = 12240,
+  NEED_HDR_VIVID = 16384,
+}
+
+export enum QualityType {
+  QN_240P = 6,
+  QN_360P = 16,
+  QN_480P = 32,
+  QN_720P = 64,
+  QN_720P_60FPS = 74,
+  QN_1080P = 80,
+  QN_1080P_HFR = 112,
+  QN_1080P_60FPS = 116,
+  QN_4K = 120,
+  QN_HDR = 125,
+  QN_DOLBY_VISION = 126,
+  QN_8K = 127,
+  QN_HDR_VIVID = 129,
 }
