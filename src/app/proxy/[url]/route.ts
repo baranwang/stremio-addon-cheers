@@ -1,17 +1,8 @@
-import { Writable } from "node:stream";
-import { Agent, stream } from "undici";
 import { BASE_HEADERS } from "@/lib/request/constants";
 
-const agent = new Agent({
-  keepAliveTimeout: 30_000,
-  keepAliveMaxTimeout: 60_000,
-  pipelining: 1,
-});
-
-const OMIT_HEADERS = new Set([
+// 不应转发的 hop-by-hop 请求头
+const OMIT_REQUEST_HEADERS = new Set([
   "host",
-  "connection",
-  "keep-alive",
   "transfer-encoding",
   "te",
   "upgrade",
@@ -29,106 +20,28 @@ export async function GET(req: Request, ctx: RouteContext<"/proxy/[url]">) {
     return new Response("Invalid URL", { status: 400 });
   }
 
-  const headers: Record<string, string> = { ...BASE_HEADERS };
-  req.headers.entries().forEach(([key, value]) => {
-    if (!OMIT_HEADERS.has(key.toLowerCase())) {
+  // 构建请求头：过滤 hop-by-hop 头并覆盖基础头
+  let headers: Record<string, string> = {};
+  req.headers.forEach((value, key) => {
+    if (!OMIT_REQUEST_HEADERS.has(key.toLowerCase())) {
       headers[key] = value;
     }
   });
+  headers = Object.assign(headers, BASE_HEADERS);
 
-  const abortController = new AbortController();
-
-  return new Promise<Response>((resolve, reject) => {
-    let streamController: ReadableStreamDefaultController<Uint8Array>;
-    let controllerClosed = false;
-
-    // 手动创建 ReadableStream，完全控制生命周期
-    const readableStream = new ReadableStream<Uint8Array>({
-      start(controller) {
-        streamController = controller;
-      },
-      cancel() {
-        // 客户端断开时触发
-        controllerClosed = true;
-        abortController.abort();
-      },
+  try {
+    const response = await fetch(url, {
+      method: req.method,
+      signal: req.signal,
+      headers,
     });
 
-    // 创建 Writable 流接收 undici 数据
-    const writable = new Writable({
-      write(chunk, _encoding, callback) {
-        if (controllerClosed) {
-          callback();
-          return;
-        }
-        try {
-          streamController.enqueue(chunk);
-          callback();
-        } catch {
-          controllerClosed = true;
-          abortController.abort();
-          callback();
-        }
-      },
-      final(callback) {
-        if (!controllerClosed) {
-          try {
-            streamController.close();
-          } catch {}
-        }
-        controllerClosed = true;
-        callback();
-      },
-      destroy(_err, callback) {
-        controllerClosed = true;
-        callback(null);
-      },
+    return new Response(response.body, {
+      headers: response.headers,
+      status: response.status,
     });
-
-    stream(
-      url,
-      {
-        method: "GET",
-        headers,
-        dispatcher: agent,
-        signal: abortController.signal,
-      },
-      ({ statusCode, headers: resHeaders }) => {
-        const responseHeaders = new Headers();
-        Object.entries(resHeaders).forEach(([key, value]) => {
-          if (!OMIT_HEADERS.has(key.toLowerCase())) {
-            responseHeaders.set(
-              key,
-              Array.isArray(value) ? value.join(", ") : (value ?? ""),
-            );
-          }
-        });
-        resolve(
-          new Response(readableStream, {
-            status: statusCode,
-            headers: responseHeaders,
-          }),
-        );
-        return writable;
-      },
-    ).catch((error) => {
-      if (!controllerClosed) {
-        controllerClosed = true;
-        try {
-          streamController.close();
-        } catch {}
-      }
-
-      if (
-        error.name === "AbortError" ||
-        error.code === "UND_ERR_ABORTED" ||
-        error.message?.includes("ResponseAborted")
-      ) {
-        return;
-      }
-
-      console.error("Proxy error:", error);
-      reject(new Response("Proxy request failed", { status: 502 }));
-    });
-  });
+  } catch (error) {
+    console.error("Proxy error:", error);
+    return new Response("Proxy request failed", { status: 502 });
+  }
 }
