@@ -1,6 +1,6 @@
 import { XMLBuilder } from "fast-xml-parser";
 import { notFound } from "next/navigation";
-import type { DashInfo, DashStreamItem } from "@/lib/bilibili";
+import type { DashStreamItem } from "@/lib/bilibili";
 import { getStream } from "@/lib/bilibili";
 import { getConfig } from "@/lib/config";
 import { proxyAssetFactory } from "@/lib/proxy";
@@ -22,6 +22,8 @@ const createAdaptationSet = (
     ...(contentType === "video" && {
       "@_width": item.width,
       "@_height": item.height,
+      "@_startWithSAP": item.start_with_sap,
+      "@_sar": item.sar,
       "@_frameRate": item.frame_rate,
     }),
     BaseURL: proxyAsset(item.base_url),
@@ -38,30 +40,6 @@ const xmlBuilder = new XMLBuilder({
   ignoreAttributes: false,
   format: true,
 });
-
-const buildDashManifest = (dash: DashInfo, proxyAsset: ProxyAssetFn) =>
-  xmlBuilder.build({
-    "?xml": {
-      "@_version": "1.0",
-      "@_encoding": "utf-8",
-    },
-    MPD: {
-      "@_xmlns": "urn:mpeg:dash:schema:mpd:2011",
-      "@_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-      "@_xsi:schemaLocation": "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd",
-      "@_profiles": "urn:mpeg:dash:profile:isoff-on-demand:2011",
-      "@_type": "static",
-      "@_mediaPresentationDuration": `PT${dash.duration}S`,
-      "@_minBufferTime": `PT${dash.min_buffer_time}S`,
-      Period: {
-        "@_duration": `PT${dash.duration}S`,
-        AdaptationSet: [
-          ...dash.video.map((v) => createAdaptationSet(v, "video", proxyAsset)),
-          ...dash.audio.map((a) => createAdaptationSet(a, "audio", proxyAsset)),
-        ],
-      },
-    },
-  });
 
 export async function GET(
   _request: Request,
@@ -85,7 +63,33 @@ export async function GET(
   }
 
   if (response.type === "DASH") {
-    const manifest = buildDashManifest(response.dash, proxyAsset);
+    const { dash } = response;
+    const manifest = xmlBuilder.build({
+      "?xml": {
+        "@_version": "1.0",
+        "@_encoding": "utf-8",
+      },
+      MPD: {
+        "@_xmlns": "urn:mpeg:dash:schema:mpd:2011",
+        "@_xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        "@_xsi:schemaLocation": "urn:mpeg:DASH:schema:MPD:2011 DASH-MPD.xsd",
+        "@_profiles": "urn:mpeg:dash:profile:isoff-on-demand:2011",
+        "@_type": "static",
+        "@_mediaPresentationDuration": `PT${dash.duration}S`,
+        "@_minBufferTime": `PT${dash.min_buffer_time}S`,
+        Period: {
+          "@_duration": `PT${dash.duration}S`,
+          AdaptationSet: [
+            ...dash.video.map((v) =>
+              createAdaptationSet(v, "video", proxyAsset),
+            ),
+            ...dash.audio.map((a) =>
+              createAdaptationSet(a, "audio", proxyAsset),
+            ),
+          ],
+        },
+      },
+    });
     return new Response(manifest, {
       headers: {
         "Content-Type": "application/dash+xml",

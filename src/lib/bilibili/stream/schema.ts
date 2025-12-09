@@ -44,7 +44,9 @@ const streamMp4ResponseSchema = z.object({
 
 const dashStreamItemSchema = z.object({
   id: z.number(),
+  start_with_sap: z.number(),
   bandwidth: z.number(),
+  sar: z.string(),
   codecs: z.string(),
   base_url: z.string(),
   segment_base: z.object({
@@ -52,9 +54,10 @@ const dashStreamItemSchema = z.object({
     index_range: z.string(),
   }),
   mime_type: z.string(),
+  frame_rate: z.string(),
+  size: z.number(),
   width: z.number(),
   height: z.number(),
-  frame_rate: z.string(),
 });
 
 export type DashStreamItem = z.infer<typeof dashStreamItemSchema>;

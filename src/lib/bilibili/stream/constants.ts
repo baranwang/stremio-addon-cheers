@@ -14,6 +14,7 @@
  *  | 12240 | 是否需求智能修复 | 必须为dash格式<br />需要认证大会员账号                     |
  */
 export enum FnvalType {
+  /** @deprecated FLV 格式已下线 */
   FLV = 0,
   MP4 = 1,
   DASH = 16,

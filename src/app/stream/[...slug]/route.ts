@@ -7,6 +7,7 @@ import {
   getSeasonIdsByDetail,
   getStream,
 } from "@/lib/bilibili";
+import { getConfig } from "@/lib/config";
 import { getBaseUrl } from "@/lib/proxy";
 import { matchResourceRoute } from "@/lib/router";
 import { resourceId } from "@/lib/utils";
@@ -50,10 +51,9 @@ export async function GET(request: NextRequest) {
     notFound();
   }
 
-  const response = await getStream({
-    ep_id: epId,
-    cid: cid,
-  });
+  const fnval = await getConfig("fnval");
+
+  const response = await getStream({ ep_id: epId, cid, fnval });
 
   const baseUrl = await getBaseUrl();
 
