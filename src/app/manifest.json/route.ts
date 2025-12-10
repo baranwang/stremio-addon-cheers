@@ -1,13 +1,7 @@
 import type { Manifest, ManifestCatalog } from "@stremio-addon/sdk";
 import { NextResponse } from "next/server";
 import pkg from "@/../package.json" with { type: "json" };
-import {
-  DEFAULT_PAGE_SIZE,
-  getSeasonCondition,
-  getSeasonIndex,
-  SeasonType,
-  SeasonTypeText,
-} from "@/lib/bilibili";
+import { getSeasonCondition, SeasonType, SeasonTypeText } from "@/lib/bilibili";
 import { getConfig } from "@/lib/config";
 
 async function buildCatalog(
@@ -34,7 +28,7 @@ async function buildCatalog(
 export async function GET() {
   const pgcCatalogs = await getConfig("pgcCatalogs");
   const catalogs = await Promise.all(
-    pgcCatalogs.map((item) =>
+    (pgcCatalogs ?? []).map((item) =>
       buildCatalog({
         id: item.toString(),
         type: item === SeasonType.Movie ? "movie" : "series",
