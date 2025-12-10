@@ -42,7 +42,8 @@ docker run -d \
 ```yaml
 services:
   stremio-addon-cheers:
-    image: ghcr.io/baranwang/stremio-addon-cheers:latest
+    image: ghcr.io/baranwang/stremio-addon-cheers:main
+    platform: linux/amd64
     container_name: stremio-addon-cheers
     ports:
       - "3000:3000"

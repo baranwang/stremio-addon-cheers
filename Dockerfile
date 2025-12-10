@@ -24,13 +24,13 @@ FROM base AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/package.json ./package.json
-
-EXPOSE 3000
 
 ENV DATABASE_PATH=./data
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
-CMD ["pnpm", "start"]
+EXPOSE 3000
+
+CMD ["node", "server.js"]
