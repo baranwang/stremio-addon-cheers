@@ -1,3 +1,4 @@
+import { groupBy } from "es-toolkit";
 import { XMLBuilder } from "fast-xml-parser";
 import { notFound } from "next/navigation";
 import type { DashStreamItem } from "@/lib/bilibili";
@@ -7,33 +8,49 @@ import { proxyAssetFactory } from "@/lib/proxy";
 type ProxyAssetFn = Awaited<ReturnType<typeof proxyAssetFactory>>;
 
 const createAdaptationSet = (
-  item: DashStreamItem,
   contentType: "video" | "audio",
+  dashItems: DashStreamItem[],
   proxyAsset: ProxyAssetFn,
-) => ({
-  "@_id": `${contentType}-${item.id}`,
-  "@_contentType": contentType,
-  "@_mimeType": item.mime_type,
-  Representation: {
-    "@_id": item.id,
-    "@_bandwidth": item.bandwidth,
-    "@_codecs": item.codecs,
-    ...(contentType === "video" && {
-      "@_width": item.width,
-      "@_height": item.height,
-      "@_startWithSAP": item.start_with_sap,
-      "@_sar": item.sar,
-      "@_frameRate": item.frame_rate,
-    }),
-    BaseURL: proxyAsset(item.base_url),
-    SegmentBase: {
-      "@_indexRange": item.segment_base.index_range,
-      Initialization: {
-        "@_range": item.segment_base.initialization,
-      },
-    },
-  },
-});
+) => {
+  const groupedItems = groupBy(dashItems, (item) => item.mime_type);
+  return Object.entries(groupedItems).map(([key, items]) => {
+    return {
+      "@_id": `${contentType}-${key}`,
+      "@_contentType": contentType,
+      "@_mimeType": items[0].mime_type,
+      Representation: items.map((item) => ({
+        "@_id": `${item.id}-${item.codecs}`,
+        "@_bandwidth": item.bandwidth,
+        "@_codecs": item.codecs,
+        ...(contentType === "video" && {
+          "@_width": item.width,
+          "@_height": item.height,
+          "@_startWithSAP": item.start_with_sap,
+          "@_sar": item.sar,
+          "@_frameRate": item.frame_rate,
+        }),
+        BaseURL: [
+          {
+            "@_serviceLocation": "main",
+            "@_priority": 1,
+            "#text": proxyAsset(item.base_url) ?? "",
+          },
+          ...(item.backup_url ?? []).map((url, index) => ({
+            "@_serviceLocation": `backup_${index + 1}`,
+            "@_priority": index + 2,
+            "#text": proxyAsset(url) ?? "",
+          })),
+        ],
+        SegmentBase: {
+          "@_indexRange": item.segment_base.index_range,
+          Initialization: {
+            "@_range": item.segment_base.initialization,
+          },
+        },
+      })),
+    };
+  });
+};
 
 const xmlBuilder = new XMLBuilder({
   ignoreAttributes: false,
@@ -77,12 +94,14 @@ export async function GET(
         Period: {
           "@_duration": `PT${dash.duration}S`,
           AdaptationSet: [
-            ...dash.video
-              .filter((item) => item.id.toString() === quality.toString())
-              .map((v) => createAdaptationSet(v, "video", proxyAsset)),
-            ...dash.audio.map((a) =>
-              createAdaptationSet(a, "audio", proxyAsset),
+            ...createAdaptationSet(
+              "video",
+              dash.video.filter(
+                (item) => item.id.toString() === quality.toString(),
+              ),
+              proxyAsset,
             ),
+            ...createAdaptationSet("audio", dash.audio, proxyAsset),
           ],
         },
       },

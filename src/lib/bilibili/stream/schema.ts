@@ -58,6 +58,7 @@ const dashStreamItemSchema = z.object({
   sar: z.string(),
   codecs: z.string(),
   base_url: z.string(),
+  backup_url: z.array(z.string()).nullish().catch(undefined),
   segment_base: z.object({
     initialization: z.string(),
     index_range: z.string(),
