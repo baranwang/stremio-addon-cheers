@@ -4,6 +4,8 @@ import pkg from "@/../package.json" with { type: "json" };
 import { getSeasonCondition, SeasonType, SeasonTypeText } from "@/lib/bilibili";
 import { getConfig } from "@/lib/config";
 
+export const dynamic = "force-dynamic";
+
 async function buildCatalog(
   catalog: ManifestCatalog,
 ): Promise<ManifestCatalog> {

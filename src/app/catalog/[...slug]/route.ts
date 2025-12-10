@@ -12,6 +12,8 @@ import { proxyAssetFactory } from "@/lib/proxy";
 import { matchResourceRoute } from "@/lib/router";
 import { resourceId } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const [matched, params] = matchResourceRoute(request.nextUrl);
   if (!matched) {

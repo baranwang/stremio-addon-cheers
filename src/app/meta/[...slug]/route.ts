@@ -11,6 +11,8 @@ import { proxyAssetFactory } from "@/lib/proxy";
 import { matchResourceRoute } from "@/lib/router";
 import { resourceId } from "@/lib/utils";
 
+export const dynamic = "force-dynamic";
+
 const fetchSeasonEpisodes = async (seasonId: number, seasonNumber: number) => {
   const { episodes } = await getSeasonEpisode(seasonId);
   return episodes

@@ -7,6 +7,8 @@ import { proxyAssetFactory } from "@/lib/proxy";
 
 type ProxyAssetFn = Awaited<ReturnType<typeof proxyAssetFactory>>;
 
+export const dynamic = "force-dynamic";
+
 const createAdaptationSet = (
   contentType: "video" | "audio",
   dashItems: DashStreamItem[],
