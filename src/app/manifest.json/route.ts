@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 async function buildCatalog(
   catalog: ManifestCatalog,
 ): Promise<ManifestCatalog> {
-  const result: ManifestCatalog = { ...catalog, extra: [] };
+  const result: ManifestCatalog = { ...catalog };
   const seasonType = Number.parseInt(catalog.id, 10) as SeasonType;
   try {
     const { filter } = await getSeasonCondition({ season_type: seasonType });
