@@ -7,14 +7,17 @@ export const ConfigureTemplate = async () => {
   const userInfo = await getUserInfo().catch(() => null);
 
   return (
-    <div className="page-container pt-40 space-y-4">
-      <div className="text-center">
-        <h1 className="text-balance font-extrabold text-4xl tracking-tight">
-          {pkg.displayName}
-        </h1>
-        <p className="mt-2 mb-4 leading-7">{pkg.description}</p>
-      </div>
-      <div className="max-w-lg mx-auto">
+    <div className="page-container py-12 md:py-20">
+      <div className="mx-auto max-w-2xl space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-2">
+          <h1 className="text-balance font-extrabold text-3xl md:text-4xl tracking-tight">
+            {pkg.displayName}
+          </h1>
+          <p className="text-muted-foreground">{pkg.description}</p>
+        </div>
+
+        {/* Content */}
         {userInfo ? <Configure userInfo={userInfo} /> : <LoginButton />}
       </div>
     </div>

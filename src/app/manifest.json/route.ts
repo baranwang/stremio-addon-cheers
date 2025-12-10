@@ -1,16 +1,14 @@
 import type { Manifest, ManifestCatalog } from "@stremio-addon/sdk";
 import { NextResponse } from "next/server";
 import pkg from "@/../package.json" with { type: "json" };
-import { getSeasonCondition, SeasonType } from "@/lib/bilibili";
-
-const baseCatalogs: ManifestCatalog[] = [
-  { id: SeasonType.Anime.toString(), type: "series", name: "番剧" },
-  { id: SeasonType.Movie.toString(), type: "movie", name: "电影" },
-  { id: SeasonType.Documentary.toString(), type: "series", name: "纪录片" },
-  { id: SeasonType.ChineseAnime.toString(), type: "series", name: "国创" },
-  { id: SeasonType.TV.toString(), type: "series", name: "电视剧" },
-  { id: SeasonType.VarietyShow.toString(), type: "series", name: "综艺" },
-];
+import {
+  DEFAULT_PAGE_SIZE,
+  getSeasonCondition,
+  getSeasonIndex,
+  SeasonType,
+  SeasonTypeText,
+} from "@/lib/bilibili";
+import { getConfig } from "@/lib/config";
 
 async function buildCatalog(
   catalog: ManifestCatalog,
@@ -34,7 +32,17 @@ async function buildCatalog(
 }
 
 export async function GET() {
-  const catalogs = await Promise.all(baseCatalogs.map(buildCatalog));
+  const pgcCatalogs = await getConfig("pgcCatalogs");
+  const catalogs = await Promise.all(
+    pgcCatalogs.map((item) =>
+      buildCatalog({
+        id: item.toString(),
+        type: item === SeasonType.Movie ? "movie" : "series",
+        name: SeasonTypeText[item],
+        extra: [{ name: "skip" }],
+      }),
+    ),
+  );
 
   return NextResponse.json(
     {

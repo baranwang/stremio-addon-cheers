@@ -12,13 +12,14 @@ import {
   ItemTitle,
 } from "@/components/item";
 
-export const ManifestUrl = () => {
+interface ManifestUrlProps {
+  baseUrl: string;
+}
+
+export const ManifestUrl: React.FC<ManifestUrlProps> = ({ baseUrl }) => {
   const manifest = useMemo(() => {
-    if (typeof window === "undefined") {
-      return null;
-    }
-    return new URL("/manifest.json", window.location.origin).toString();
-  }, []);
+    return new URL("/manifest.json", baseUrl).toString();
+  }, [baseUrl]);
   return (
     <Item>
       <ItemContent>

@@ -1,10 +1,12 @@
 "use server";
 
+import type { SeasonType } from "./bilibili";
 import { db } from "./db";
 
 interface Config {
   cookies: Record<string, string>;
   assetProxy: boolean;
+  pgcCatalogs: SeasonType[];
 }
 
 export const getConfig = async <K extends keyof Config>(key: K) => {
@@ -17,4 +19,8 @@ export const saveConfig = async <K extends keyof Config>(
 ) => {
   await db.put(key, value);
   return value;
+};
+
+export const removeConfig = async <K extends keyof Config>(key: K) => {
+  await db.remove(key);
 };
