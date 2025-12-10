@@ -43,6 +43,7 @@ docker run -d \
 services:
   stremio-addon-cheers:
     image: ghcr.io/baranwang/stremio-addon-cheers:main
+    pull_policy: always
     platform: linux/amd64
     container_name: stremio-addon-cheers
     ports:
