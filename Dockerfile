@@ -25,8 +25,8 @@ WORKDIR /app
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/node_modules/lmdb ./node_modules/lmdb
-COPY --from=builder /app/node_modules/@lmdb ./node_modules/@lmdb
+
+RUN pnpm add lmdb
 
 ENV DATABASE_PATH=./data
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
