@@ -22,15 +22,13 @@ FROM base AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-
-RUN pnpm add lmdb
+COPY --from=builder /app/node_modules ./node_modules
 
 ENV DATABASE_PATH=./data
 ENV NODE_TLS_REJECT_UNAUTHORIZED=0
 
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["pnpm", "start"]
