@@ -1,4 +1,7 @@
-FROM node:24-slim AS base
+FROM node:24-alpine AS base
+
+RUN apk update
+RUN apk add --no-cache libc6-compat
 
 RUN npm install -g pnpm
 
