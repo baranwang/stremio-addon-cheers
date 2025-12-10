@@ -7,8 +7,8 @@ import {
   getSeasonIdsByDetail,
   getStream,
 } from "@/lib/bilibili";
-import { getConfig } from "@/lib/config";
 import { getBaseUrl } from "@/lib/proxy";
+// import { BASE_HEADERS } from "@/lib/request/constants";
 import { matchResourceRoute } from "@/lib/router";
 import { resourceId } from "@/lib/utils";
 
@@ -64,6 +64,11 @@ export async function GET(request: NextRequest) {
     const result: Stream = {
       name,
       url: `${baseUrl}/proxy/video/${epId}/${format.quality}`,
+      // behaviorHints: {
+      //   proxyHeaders: {
+      //     request: BASE_HEADERS,
+      //   },
+      // },
     };
 
     return result;

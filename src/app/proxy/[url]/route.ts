@@ -21,27 +21,28 @@ export async function GET(req: Request, ctx: RouteContext<"/proxy/[url]">) {
   }
 
   // 构建请求头：过滤 hop-by-hop 头并覆盖基础头
-  let headers: Record<string, string> = {};
+  const headers: Record<string, string> = {};
   req.headers.forEach((value, key) => {
     if (!OMIT_REQUEST_HEADERS.has(key.toLowerCase())) {
       headers[key] = value;
     }
   });
-  headers = Object.assign(headers, BASE_HEADERS);
 
-  try {
-    const response = await fetch(url, {
-      method: req.method,
-      signal: req.signal,
-      headers,
-    });
+  const response = await fetch(url, {
+    headers: {
+      ...headers,
+      ...BASE_HEADERS,
+    },
+  });
 
-    return new Response(response.body, {
-      headers: response.headers,
-      status: response.status,
-    });
-  } catch (error) {
-    console.error("Proxy error:", error);
-    return new Response("Proxy request failed", { status: 502 });
-  }
+  // 直接复制响应头，移除 content-length 避免长度不匹配错误
+  const responseHeaders = new Headers(response.headers);
+  responseHeaders.delete("content-length");
+  responseHeaders.delete("content-encoding");
+  responseHeaders.delete("transfer-encoding");
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: responseHeaders,
+  });
 }
