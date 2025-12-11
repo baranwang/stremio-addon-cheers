@@ -9,6 +9,7 @@ const DEFAULT_FNVAL =
   FnvalType.NEED_8K |
   FnvalType.DOLBY_AUDIO |
   FnvalType.DOLBY_VISION |
+  FnvalType.SMART_REPAIR |
   FnvalType.NEED_HDR_VIVID;
 
 export const getStreamRequestSchema = z.object({
